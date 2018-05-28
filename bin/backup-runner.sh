@@ -39,6 +39,7 @@ Backup Runner - Backup Multiple Hosts
     
   options:
     -a | --all                 backup all hosts
+    -r | --realm               bereich (intern or quali)
     -c | --comment <comment>   backup annotation
     [hosts ...]                one or more hosts to backup
     -h                         this help message
@@ -48,6 +49,7 @@ Backup Runner - Backup Multiple Hosts
 # Parse Opts
 while true; do
     case "$1" in
+        -r | --realm) HOSTS_REALM=$2; HOSTS_DIR="/${POOL_NAME}/${HOSTS_REALM}/"; shift 2 ;;
         -a | --all ) HOSTS=$(ls ${HOSTS_DIR}); shift ;;
         -c | --comment ) ANNOTATION=$2; shift 2 ;;
         -e | --expiry ) EXPIRY=$2; shift 2 ;;
@@ -67,7 +69,7 @@ logMessage 1 $LOGFILE "Info: Begin backup run of hosts $(echo ${HOSTS})"
 
 for host in $HOSTS; do
     logMessage 1 $LOGFILE "Info: Begining backup of ${host}" 
-    ${CWD}backup.sh ${host} "${ANNOTATION}" ${EXPIRY}
+    ${CWD}backup.sh ${HOSTS_REALM} ${host} "${ANNOTATION}" ${EXPIRY}
     if [ "$?" = "0" ]; then
         logMessage 1 $LOGFILE "Info: Completed backup of ${host}" 
     else

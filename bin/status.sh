@@ -10,7 +10,7 @@ CWD="$(dirname $0)/"
 # Source Functions
 . ${CWD}functions.sh;
 
-HOSTS_DIR="/${POOL_NAME}/hosts/"
+HOSTS_DIR="/${POOL_NAME}/intern/"
 
 if [ ! $(whoami) = "root" ]; then
     echo "Error: Must run as root."

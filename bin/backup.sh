@@ -45,8 +45,10 @@ while test $# -gt 0; do
     esac
 done
 
-HOST=$1
-ANNOTATION=${2-none}
+HOSTS_REALM=$1
+HOSTS_DIR="/${POOL_NAME}/${HOSTS_REALM}/"
+HOST=$2
+ANNOTATION=${3-none}
 LOCKFILE="/var/run/$(basename $0 | sed s/\.sh//)-${HOST}.pid"
 LOGFILE="${HOSTS_DIR}${HOST}/l/backup.log"
 STATUSFILE="${HOSTS_DIR}${HOST}/l/STATUS"
@@ -70,7 +72,7 @@ fi
 sourceHostConfig $HOSTS_DIR $HOST
 
 # Options Overridable by backup.conf (or command line)
-EXPIRY=$(expr ${3-$EXPIRY} \* 24 \* 60 \* 60 + `date +%s`) # Convert expiry to unix epoc
+EXPIRY=$(expr ${4-$EXPIRY} \* 24 \* 60 \* 60 + `date +%s`) # Convert expiry to unix epoc
 
 # Check to see if the host backup is disabled.
 if [ "${DISABLED}" == "true" ] && [ -z "$FORCE" ];  then
@@ -137,7 +139,7 @@ if [ "$RSYNC_RETVAL" = "0" ] || [ "${SNAPSHOT_ON_ERROR}" == "true" ]; then
         echo "failed" > $STATUSFILE
         logMessage 3 $LOGFILE "Backup failed: ${CMD}. Rsync exited with ${RSYNC_RETVAL}"
     fi
-    storageSnapshot $POOL_TYPE $POOL_NAME/hosts/${HOST} ${SNAP_NAME}
+    storageSnapshot $POOL_TYPE $POOL_NAME/${HOSTS_REALM}/${HOST} ${SNAP_NAME}
     SNAPSHOT_RETVAL=$?
 
     if [ "$RSYNC_RETVAL" = "0" ] && [ "$SNAPSHOT_RETVAL" = "0" ]; then
