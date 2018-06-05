@@ -49,7 +49,7 @@ HOSTS_REALM=$1
 HOSTS_DIR="/${POOL_NAME}/${HOSTS_REALM}/"
 HOST=$2
 ANNOTATION=${3-none}
-LOCKFILE="/var/run/$(basename $0 | sed s/\.sh//)-${HOST}.pid"
+LOCKFILE="/var/run/$(basename $0 | sed s/\.sh//)-${HOSTS_REALM}-${HOST}.pid"
 LOGFILE="${HOSTS_DIR}${HOST}/l/backup.log"
 STATUSFILE="${HOSTS_DIR}${HOST}/l/STATUS"
 

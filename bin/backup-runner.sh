@@ -11,22 +11,11 @@ CWD="$(dirname $0)/"
 . ${CWD}functions.sh;
 
 HOSTS_DIR="/${POOL_NAME}/hosts/"
-LOCKFILE="/var/run/$(basename $0 | sed s/\.sh//).pid"
 LOGFILE="/${POOL_NAME}/logs/backup.log"
 
 if [ ! $(whoami) = "root" ]; then
     echo "Error: Must run as root."
     exit 99
-fi
-
-# Check to see if we are already running / locked, limit to one instance per host
-if [ -f ${LOCKFILE} ] ; then
-    logMessage 3 $LOGFILE "Error: Already running, or locked. Lockfile exists [$(ls -ld $LOCKFILE)]."
-    exit 99
-else
-    echo $$ > ${LOCKFILE}
-    # Upon exit, remove lockfile.
-    trap "{ rm -f ${LOCKFILE}; }" EXIT
 fi
 
 showUsage() {
@@ -63,6 +52,17 @@ if [ "$HOSTS" == '' ]; then
     echo "Error: Please specify host or hostnames name as the arguments, or --all."
     showUsage
     exit 128
+fi
+
+# Check to see if we are already running / locked, limit to one instance per realm
+LOCKFILE="/var/run/$(basename $0 | sed s/\.sh/-${HOSTS_REALM}/).pid"
+if [ -f ${LOCKFILE} ] ; then
+    logMessage 3 $LOGFILE "Error: Already running, or locked. Lockfile exists [$(ls -ld $LOCKFILE)]."
+    exit 99
+else
+    echo $$ > ${LOCKFILE}
+    # Upon exit, remove lockfile.
+    trap "{ rm -f ${LOCKFILE}; }" EXIT
 fi
 
 logMessage 1 $LOGFILE "Info: Begin backup run of hosts $(echo ${HOSTS})" 
