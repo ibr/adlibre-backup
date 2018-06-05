@@ -17,19 +17,19 @@ if [ ! $(whoami) = "root" ]; then
     exit 99
 fi
 
-if [ "$1" == '--all' ]; then
-    HOSTS=$(ls ${HOSTS_DIR})
+if [ "$1" != '' ]; then
+    HOSTS=$(ls /${POOL_NAME}/$1)
 elif
     [ "$1" == '' ]; then
-    echo "Please specify host or hostnames name as the arguments, or --all."
+    echo "Bitte Bereich angeben."
     exit 99
-else
-    HOSTS=$@
 fi
 
+BEREICH=$1
+
 for host in $HOSTS; do
-    if [ -d ${HOSTS_DIR}${host}/.${POOL_TYPE}/snapshot ]; then
-        SNAPSHOTS=$(find ${HOSTS_DIR}${host}/.${POOL_TYPE}/snapshot -maxdepth 1 -mindepth 1 | sort)
+    if [ -d /${POOL_NAME}/${BEREICH}/${host}/.${POOL_TYPE}/snapshot ]; then
+        SNAPSHOTS=$(find /${POOL_NAME}/${BEREICH}/${host}/.${POOL_TYPE}/snapshot -maxdepth 1 -mindepth 1 | sort)
         for snapshot in $SNAPSHOTS; do
             SNAPSHOT=$(basename $snapshot)
             EXPIRY=$(cat $snapshot/c/EXPIRY 2> /dev/null)
