@@ -13,7 +13,7 @@ CWD="$(dirname $0)/"
 
 # Defaults
 : ${NSCA_BIN:='/usr/sbin/send_nsca'}
-: ${NSCA_CFG:='/etc/nagios/send_nsca.cfg'}
+: ${NSCA_CFG:='/etc/send_nsca.cfg'}
 : ${NSCA_PORT:='5667'}
 : ${HOST:=${4:-$(hostname)}}
 
