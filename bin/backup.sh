@@ -93,6 +93,24 @@ eval "for i in $INCLUDE $INCLUDE_ADDITIONAL; do RSYNC_INCLUDES=\"\$RSYNC_INCLUDE
 # enable shell globbing
 set +f
 
+# mount Directories
+for D in $MOUNT_DIRS; do
+   SUBDIR=$(ls ${D})
+   for SD in $SUBDIR; do
+      findmnt ${MOUNT_DIRS}${SD} &> /dev/null
+	   if [ $? != 0 ]; then
+	      mount ${MOUNT_DIRS}${SD}
+	      MOUNT_RETVAL=$?
+	   fi
+      findmnt ${MOUNT_DIRS}${SD} &> /dev/null
+	   if [ $? != 0 ]; then
+              echo "failed" > $STATUSFILE
+              logMessage 3 $LOGFILE "Backup failed: ${CMD}. Mount ${SD} exited with ${MOUNT_RETVAL}"
+	      exit 99
+	   fi
+   done
+done
+
 # Generate rsync compatible backup path arguments
 for P in $BACKUP_PATHS; do
    [ "${#P}" -ne "1" ] && P=${P%/}  # Remove trailing /
@@ -173,5 +191,13 @@ else
 fi
 
 ) 2>&1 1>> ${LOGFILE} | tee -a ${LOGFILE} # stderr to console, stdout&stderr to logfile
+
+# umount Directories
+for D in $MOUNT_DIRS; do
+   SUBDIR=$(ls ${D})
+   for SD in $SUBDIR; do
+     umount ${MOUNT_DIRS}${SD}
+   done
+done
 
 exit 0
