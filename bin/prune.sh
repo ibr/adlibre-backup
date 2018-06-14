@@ -29,6 +29,11 @@ while test $# -gt 0; do
         HOSTS=$(ls ${HOSTS_DIR})
         shift
         ;;
+    -r | --realm)
+	HOSTS_REALM=$2
+	HOSTS_DIR="/${POOL_NAME}/${HOSTS_REALM}/"
+	shift 2
+	;;
     --dry-run | -n)
         echo "Initiating dry run."
         DRYRUN="Dry run:"
@@ -55,7 +60,7 @@ done
 
 if [ -z "$HOSTS" -a "$1" == "" ] ; then
     echo "Please specify host or hostnames name as the arguments, or --all."
-    echo "Usage: `basename $0` [ --dry-run | -n ] [ --force | -f ] [ --all | hostname ... ]"
+    echo "Usage: `basename $0` [ --dry-run | -n ] [-r | --realm  Bereich ] [ --force | -f ] [ --all | hostname ... ]"
     exit 99
 elif [ -z "$HOSTS" ] ; then
     HOSTS=$@
