@@ -17,7 +17,7 @@ logMessage () {
     if [ "$1" -ge "$LOG_LEVEL" ]; then
         echo "$DATE $3" >> ${2}
         if [ "$ECHO_LOG" -eq "1" ]; then
-            echo $3
+	    echo "$(date +'%T') $3"
         fi
     fi
 }
